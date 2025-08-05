@@ -340,7 +340,7 @@ const Collection = () => {
       {isContactModalOpen && (
         <div
           onClick={closeModals}
-          className={`fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-6 transition-opacity duration-300 ${isContactModalVisible ? 'opacity-100' : 'opacity-0'
+          className={`fixed inset-0 bg-black bg-opacity-65 z-50 flex items-center justify-center p-6 transition-opacity duration-300 ${isContactModalVisible ? 'opacity-100' : 'opacity-0'
             }`}
         >
           <div
@@ -384,7 +384,7 @@ const Collection = () => {
       {isSizeChartModalOpen && (
         <div
           onClick={closeModals}
-          className={`fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 transition-opacity duration-300 ${isSizeChartModalVisible ? 'opacity-100' : 'opacity-0'
+          className={`fixed inset-0 bg-black bg-opacity-65 z-50 flex items-center justify-center p-4 transition-opacity duration-300 ${isSizeChartModalVisible ? 'opacity-100' : 'opacity-0'
             }`}
         >
           <div
