@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Geologica', 'Inter', system-ui, sans-serif;
+ 
+}
+.collections{
+  background: #F7F5F0;
+  
+}
+.coming-soon{
+  color: #4E4A33;
+  font-size: 24px;
+}
+.coll-btn{
+  background: #00000080;
+}
+
+.anim-text{
+  animation: text 1.5s linear 5s;
+}
+
+.anim-border{
+  animation: border 2s linear 3s;
+}
+
+
+.anim-border {
+  /* Задержка в 1 секунду перед началом анимации */
+  animation: border-grow 1s cubic-bezier(0.4, 0, 0.2, 1) 2.5s forwards;
+}
+
+.anim-text {
+  /* Задержка в 2 секунды, чтобы текст начал выезжать после завершения анимации границы */
+  animation: text-slide 1s cubic-bezier(0.4, 0, 0.2, 1) 3.5s forwards;
+}
+
+@keyframes border-grow {
+  from {
+    height: 0;
+  }
+  to {
+    height: 170px; /* Измените это значение, чтобы оно соответствовало высоте вашего текста */
+  }
+}
+
+@keyframes text-slide {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+
+.loader-bar {
+  width: 0;
+  animation: fill-loader 1.5s forwards;
+}
+
+@keyframes fill-loader {
+  to {
+    width: 100%;
+  }
+}
