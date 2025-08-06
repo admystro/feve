@@ -16,7 +16,7 @@ const Footer = () => {
             </a>
           </li>
           <li>
-            <a href="https://instagram.com/feve.ua" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <a href="https://instagram.com/feve.clothing" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"

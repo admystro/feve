@@ -83,7 +83,7 @@ const HeroSlider = ({ slides, autoplayInterval = 5000, randomOrder = true }) => 
     >
       {displayImages.map((image, index) => (
         <div
-          key={`${image}-${index}`}
+          key={`slide-${index}`} // ← ИСПРАВЛЕНО: убрал ${image}
           className={`absolute inset-0 transition-all duration-[2000ms] ease-in-out ${
             index === currentSlide ? 'opacity-100 scale-100' : 'opacity-0 scale-102'
           }`}

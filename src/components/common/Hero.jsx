@@ -23,7 +23,7 @@ const Hero = ({ season = "summer" }) => {
   const currentSlides = heroSlides[season] || heroSlides.summer;
 
   return (
-    <section className="relative w-full h-screen sm:h-[70vh] lg:h-[85vh] overflow-hidden">
+    <section className="relative w-full h-[100dvh] sm:h-[70vh] lg:h-[85vh] overflow-hidden hero-smooth">
       <HeroSlider slides={currentSlides} autoplayInterval={5000} randomOrder={true} />
 
       <div className="absolute inset-0 bg-black bg-opacity-50"></div>
@@ -54,12 +54,12 @@ const Hero = ({ season = "summer" }) => {
             
             <div className="anim-border absolute top-0 left-0 w-1 h-0 bg-white "></div>
             <h1 className="anim-text pl-4 -translate-x-full text-justify">
-              Мета бренду - створювати якісний
-              і стильний жіночий одяг з натуральних тканин,
-              який підкреслює багатогранність жіночої природи,
+              <strong>Мета бренду</strong> - створювати <strong>якісний
+              і стильний жіночий одяг</strong> з <strong>натуральних тканин</strong>,
+              який підкреслює <strong>багатогранність жіночої природи</strong>,
               поєднуючи комфорт, стиль та елегантність,
-              естетику та функціональність,
-              приділяючи увагу деталям та крою.
+              <strong>естетику та функціональність</strong>,
+              приділяючи увагу <strong>деталям та крою</strong>.
             </h1>
           </div>
         </div>

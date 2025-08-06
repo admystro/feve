@@ -27,7 +27,7 @@ function ScrollToTop() {
 function App() {
   return (
     <LoadingProvider>
-      <Router>
+      <Router basename="/feve">
         <GlobalLoader /> {/* Глобальный лоадер */}
         <ScrollToTop />
         <div className="App">

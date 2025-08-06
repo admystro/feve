@@ -43,17 +43,17 @@ const Collection = () => {
   const messengerLinks = [
     {
       name: 'Instagram',
-      icon: '/assets/icons/instagram.svg',
-      href: 'https://instagram.com/your_account',
+      icon: '/feve/assets/icons/instagram.svg',
+      href: 'https://instagram.com/feve.clothing',
     },
     {
       name: 'Telegram',
-      icon: '/assets/icons/telegram.svg',
+      icon: '/feve/assets/icons/telegram.svg',
       href: 'https://t.me/your_channel_or_username',
     },
     {
       name: 'Whatsapp',
-      icon: '/assets/icons/whatsapp.svg',
+      icon: '/feve/assets/icons/whatsapp.svg',
       href: 'https://wa.me/380XXXXXXXXX',
     },
   ];

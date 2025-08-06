@@ -8,7 +8,8 @@ const ProductCard = ({ product, onContactClick, onSizeChartClick }) => {
   const [touchEnd, setTouchEnd] = useState(null);
   const [dragOffset, setDragOffset] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
-
+  const [touchStartY, setTouchStartY] = useState(null);
+  const [swipeDirection, setSwipeDirection] = useState(null); // 'horizontal', 'vertical', null
 
   const minSwipeDistance = 50;
 
@@ -28,19 +29,26 @@ const ProductCard = ({ product, onContactClick, onSizeChartClick }) => {
   ).values()];
 
   const getColorStyle = (colorValue) => {
-    const colorMap = {
-      'sky-blue': '#87CEEB',
-      'milk': '#F5F5DC',
-      'black': '#000000',
-      'pink': '#FFC0CB',
-      'beige': '#F5F5DC',
-      'ice-satin': '#E6F3FF',
-      'midi': '#D2B48C',
-      'graphite': '#36454F',
-      'deep-blue': '#003366'
-    };
-    return colorMap[colorValue] || '#CCCCCC';
+  const colorMap = {
+    'sky-blue': '#87CEEB',
+    'milk': '#F5F5DC',
+    'black': '#000000',
+    'pink': '#FFC0CB',
+    'beige': '#F5F5DC',
+    'ice-satin': '#E6F3FF',
+    'midi': '#D2B48C',
+    'graphite': '#36454F',
+    'deep-blue': '#003366',
+    'suede': '#8B4513',
+    'basic': '#808080',
+    'white': '#FFFFFF',
+    'deep-grey': '#4A4A4A',  
+    'gray': '#808080',
+    'deep-gray': '#404040',
+    'blue': '#4169E1'  
   };
+  return colorMap[colorValue] || '#CCCCCC';
+};
 
   const variantsForSelectedColor = product.variants.filter(
     variant => variant.color.value === activeVariant.color.value
@@ -84,37 +92,52 @@ const ProductCard = ({ product, onContactClick, onSizeChartClick }) => {
     setCurrentImageIndex(0);
   }, [selectedVariantId]);
 
+  // Универсальные функции навигации
+  const getSlideCount = () => {
+    if (product.type === 'bundle' && variantsForSelectedColor.length > 1) {
+      return variantsForSelectedColor.length;
+    }
+    return currentImages.length;
+  };
+
+  const getCurrentSlideIndex = () => {
+    if (product.type === 'bundle' && variantsForSelectedColor.length > 1) {
+      return variantsForSelectedColor.findIndex(v => v.id === selectedVariantId);
+    }
+    return currentImageIndex;
+  };
+
+  const goToSlide = (index) => {
+    if (product.type === 'bundle' && variantsForSelectedColor.length > 1) {
+      if (index >= 0 && index < variantsForSelectedColor.length) {
+        setSelectedVariantId(variantsForSelectedColor[index].id);
+      }
+    } else {
+      if (index >= 0 && index < currentImages.length) {
+        setCurrentImageIndex(index);
+      }
+    }
+  };
+
   const nextImage = (e) => {
     e?.stopPropagation();
-    if (product.type === 'bundle' && variantsForSelectedColor.length > 1) {
-      const currentIndex = variantsForSelectedColor.findIndex(v => v.id === selectedVariantId);
-      const nextIndex = currentIndex === variantsForSelectedColor.length - 1 ? 0 : currentIndex + 1;
-      setSelectedVariantId(variantsForSelectedColor[nextIndex].id);
-    } else {
-      setCurrentImageIndex((prev) => (prev === currentImages.length - 1 ? 0 : prev + 1));
-    }
+    const slideCount = getSlideCount();
+    const currentIndex = getCurrentSlideIndex();
+    const nextIndex = currentIndex === slideCount - 1 ? 0 : currentIndex + 1;
+    goToSlide(nextIndex);
   };
 
   const prevImage = (e) => {
     e?.stopPropagation();
-    if (product.type === 'bundle' && variantsForSelectedColor.length > 1) {
-      const currentIndex = variantsForSelectedColor.findIndex(v => v.id === selectedVariantId);
-      const prevIndex = currentIndex === 0 ? variantsForSelectedColor.length - 1 : currentIndex - 1;
-      setSelectedVariantId(variantsForSelectedColor[prevIndex].id);
-    } else {
-      setCurrentImageIndex((prev) => (prev === 0 ? currentImages.length - 1 : prev - 1));
-    }
+    const slideCount = getSlideCount();
+    const currentIndex = getCurrentSlideIndex();
+    const prevIndex = currentIndex === 0 ? slideCount - 1 : currentIndex - 1;
+    goToSlide(prevIndex);
   };
 
   const goToImage = (index, e) => {
     e.stopPropagation();
-    if (product.type === 'bundle' && variantsForSelectedColor.length > 1) {
-      if (index < variantsForSelectedColor.length) {
-        setSelectedVariantId(variantsForSelectedColor[index].id);
-      }
-    } else {
-      setCurrentImageIndex(index);
-    }
+    goToSlide(index);
   };
 
   const handleColorChange = (colorValue) => {
@@ -124,109 +147,125 @@ const ProductCard = ({ product, onContactClick, onSizeChartClick }) => {
     }
   };
 
-  const onTouchStart = (e) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const onTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const onTouchEnd = (e) => {
-    e.stopPropagation();
-    if (!touchStart || !touchEnd) return;
-
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (isLeftSwipe) {
-      nextImage();
-    } else if (isRightSwipe) {
-      prevImage();
-    }
-  };
-
-  const getNavigationDotsCount = () => {
-    if (product.type === 'bundle' && variantsForSelectedColor.length > 1) {
-      return variantsForSelectedColor.length;
-    }
-    return currentImages.length;
-  };
-
-  const getCurrentDotIndex = () => {
-    if (product.type === 'bundle' && variantsForSelectedColor.length > 1) {
-      return variantsForSelectedColor.findIndex(v => v.id === selectedVariantId);
-    }
-    return currentImageIndex;
-  };
-
   const shouldShowNavigation = () => {
-    if (product.type === 'bundle') {
-      return variantsForSelectedColor.length > 1 || currentImages.length > 1;
+    return getSlideCount() > 1;
+  };
+
+  // Рендер слайдов
+  const renderSlides = () => {
+    if (product.type === 'bundle' && variantsForSelectedColor.length > 1) {
+      // Для bundle показываем первое изображение каждого варианта
+      return variantsForSelectedColor.map((variant, idx) => {
+        const image = variant.images?.[0];
+        return image ? (
+          <img
+            key={variant.id}
+            src={image}
+            alt={displayInfo.name}
+            className="w-full h-full object-cover flex-shrink-0"
+            style={{ width: `${100 / variantsForSelectedColor.length}%` }}
+            draggable={false}
+          />
+        ) : null;
+      });
+    } else {
+      // Для обычных товаров показываем все изображения активного варианта
+      return currentImages.map((src, idx) => (
+        <img
+          key={idx}
+          src={src}
+          alt={displayInfo.name}
+          className="w-full h-full object-cover flex-shrink-0"
+          style={{ width: `${100 / currentImages.length}%` }}
+          draggable={false}
+        />
+      ));
     }
-    return currentImages.length > 1;
+  };
+
+  const getTransform = () => {
+    const slideCount = getSlideCount();
+    const currentIndex = getCurrentSlideIndex();
+    const baseTransform = -currentIndex * (100 / slideCount);
+    // Применяем dragOffset только если это горизонтальный свайп
+    const dragTransform = (isDragging && swipeDirection === 'horizontal') 
+      ? (dragOffset / window.innerWidth) * 100 
+      : 0;
+    return `translateX(${baseTransform + dragTransform}%)`;
   };
 
   return (
     <div className="bg-white shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
       <div
-        className="relative aspect-[3/4] overflow-hidden group touch-pan-x"
+        className="relative aspect-[3/4] overflow-hidden group"
+        style={{ touchAction: 'pan-y pinch-zoom' }}
         onTouchStart={(e) => {
-          setTouchStart(e.targetTouches[0].clientX);
-          setIsDragging(true);
+          const touch = e.targetTouches[0];
+          setTouchStart(touch.clientX);
+          setTouchStartY(touch.clientY);
+          setTouchEnd(null);
+          setSwipeDirection(null);
+          setIsDragging(false);
         }}
         onTouchMove={(e) => {
-          const touchX = e.targetTouches[0].clientX;
+          const touch = e.targetTouches[0];
+          const touchX = touch.clientX;
+          const touchY = touch.clientY;
+          
           setTouchEnd(touchX);
-          if (touchStart !== null) {
+          
+          if (touchStart !== null && touchStartY !== null && swipeDirection === null) {
+            const deltaX = Math.abs(touchX - touchStart);
+            const deltaY = Math.abs(touchY - touchStartY);
+            
+            // Определяем направление свайпа только после небольшого движения
+            if (deltaX > 10 || deltaY > 10) {
+              if (deltaX > deltaY) {
+                setSwipeDirection('horizontal');
+                setIsDragging(true);
+              } else {
+                setSwipeDirection('vertical');
+              }
+            }
+          }
+          
+          // Применяем dragOffset только для горизонтального свайпа
+          if (swipeDirection === 'horizontal' && touchStart !== null) {
             setDragOffset(touchX - touchStart);
           }
         }}
         onTouchEnd={() => {
-          setIsDragging(false);
-          if (!touchStart || !touchEnd) return;
+          // Обрабатываем свайп только если это горизонтальное движение
+          if (swipeDirection === 'horizontal' && touchStart !== null && touchEnd !== null) {
+            const distance = touchStart - touchEnd;
+            const isLeftSwipe = distance > minSwipeDistance;
+            const isRightSwipe = distance < -minSwipeDistance;
 
-          const distance = touchStart - touchEnd;
-          const isLeftSwipe = distance > minSwipeDistance;
-          const isRightSwipe = distance < -minSwipeDistance;
-
-          if (isLeftSwipe) {
-            setCurrentImageIndex((prev) =>
-              prev === currentImages.length - 1 ? 0 : prev + 1
-            );
-          } else if (isRightSwipe) {
-            setCurrentImageIndex((prev) =>
-              prev === 0 ? currentImages.length - 1 : prev - 1
-            );
+            if (isLeftSwipe) {
+              nextImage();
+            } else if (isRightSwipe) {
+              prevImage();
+            }
           }
 
+          // Сброс всех состояний
+          setIsDragging(false);
           setTouchStart(null);
+          setTouchStartY(null);
           setTouchEnd(null);
           setDragOffset(0);
+          setSwipeDirection(null);
         }}
       >
         <div
           className="flex h-full transition-transform duration-300 ease-in-out"
           style={{
-            width: `${currentImages.length * 100}%`,
-            transform: `translateX(calc(-${currentImageIndex * (100 / currentImages.length)}% + ${isDragging ? dragOffset : 0}px))`,
+            width: `${getSlideCount() * 100}%`,
+            transform: getTransform(),
           }}
         >
-          {currentImages.map((src, idx) => (
-            <img
-              key={idx}
-              src={src}
-              alt={displayInfo.name}
-              className="w-full h-full object-cover flex-shrink-0"
-              style={{ width: `${100 / currentImages.length}%` }}
-              draggable={false}
-            />
-          ))}
+          {renderSlides()}
         </div>
-
-
 
         {/* Цвета в левом нижнем углу */}
         <div className="absolute bottom-3 left-3 flex flex-col gap-3">
@@ -243,7 +282,7 @@ const ProductCard = ({ product, onContactClick, onSizeChartClick }) => {
                   className="sr-only"
                 />
                 <div
-                  className={`w-8 h-8  border-2`}
+                  className={`w-8 h-8 border-2`}
                   style={{
                     borderColor: isSelected ? 'black' : 'white',
                     backgroundColor: 'white',
@@ -253,7 +292,7 @@ const ProductCard = ({ product, onContactClick, onSizeChartClick }) => {
                   }}
                 >
                   <div
-                    className="w-6 h-6 "
+                    className="w-6 h-6"
                     style={{ backgroundColor: getColorStyle(color.value) }}
                     title={color.name}
                   />
@@ -285,14 +324,15 @@ const ProductCard = ({ product, onContactClick, onSizeChartClick }) => {
         {/* Точки навигации */}
         {shouldShowNavigation() && (
           <div className="absolute bottom-3 right-3 flex space-x-2">
-            {Array.from({ length: getNavigationDotsCount() }).map((_, index) => (
+            {Array.from({ length: getSlideCount() }).map((_, index) => (
               <button
                 key={index}
                 onClick={(e) => goToImage(index, e)}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${index === getCurrentDotIndex()
-                  ? "bg-white scale-125"
-                  : "bg-white/60 hover:bg-white/80"
-                  }`}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  index === getCurrentSlideIndex()
+                    ? "bg-white scale-125"
+                    : "bg-white/60 hover:bg-white/80"
+                }`}
               />
             ))}
           </div>
@@ -327,7 +367,7 @@ const ProductCard = ({ product, onContactClick, onSizeChartClick }) => {
                 displayInfo
               })
             }
-            className="flex-1 bg-white text-black py-3 px-4 font-medium  transition-colors duration-300 flex items-center justify-center gap-2"
+            className="flex-1 bg-white text-black py-3 px-4 font-medium transition-colors duration-300 flex items-center justify-center gap-2"
           >
             <MessageCircle className="h-4 w-4" />
             Зв'язатися
